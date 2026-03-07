@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baby Care Scheduler</title>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="56657db4-1da7-48e9-b62b-93cf3358ca34"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky:#A8C8D8; --sky-mid:#C0D8E8; --sky-light:#DCF0F8;
+    --teal:#CCE8E4; --teal-txt:#5AABA4;
+    --butter:#F2E4B8; --butter-txt:#C4A040;
+    --blush:#F4D4D0; --blush-txt:#C88878;
+    --sage:#C8DDD8; --sage-txt:#3A7870;
+    --lilac:#DDD0EE; --lilac-txt:#8070A8;
+    --white:#FAFAF8; --card-bg:#F4F1EC; --border:#E4DDD4;
+    --text:#2D2424; --text-soft:#8A7A74; --text-light:#B8A898;
+    --available:#B8D8CC; --avail-txt:#2A6050;
+    --preferred:#F0E0A0; --pref-txt:#7A6010;
+    --unavail:#D8D0C8; --unavail-txt:#907870;
+    --r:18px; --rp:100px;
+    --sh:0 2px 10px rgba(45,36,36,.06);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Nunito Sans',sans-serif;background:#DDD8D0;color:var(--text);padding:24px;}
+  .app{max-width:1020px;margin:0 auto;background:var(--white);border-radius:26px;box-shadow:0 8px 40px rgba(45,36,36,.13);overflow:hidden;}
+
+  /* HEADER */
+  .header{background:linear-gradient(145deg,var(--sky) 0%,var(--sky-mid) 55%,var(--sky-light) 100%);padding:28px 32px 36px;border-radius:0 0 36px 36px;position:relative;overflow:hidden;text-align:center;}
+  .header::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;background:rgba(255,255,255,.14);border-radius:50%;}
+  .hi{position:relative;z-index:1;}
+  .htop{display:flex;align-items:center;justify-content:center;gap:16px;}
+  .logo{width:64px;height:64px;border-radius:16px;flex-shrink:0;box-shadow:0 4px 18px rgba(45,36,36,.22);background:#C8E0EC;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .htxt h1{font-family:'Nunito',sans-serif;font-size:22px;font-weight:900;color:#1C3040;text-shadow:0 1px 0 rgba(255,255,255,.35);}
+  .htxt p{font-size:12px;color:rgba(28,48,64,.6);font-weight:600;margin-top:3px;}
+  .bnrow{margin-top:18px;display:flex;align-items:center;justify-content:center;gap:10px;}
+  .bnlbl{font-size:12px;font-weight:700;color:rgba(28,48,64,.6);}
+  .bninput{background:rgba(255,255,255,.3);border:1.5px solid rgba(255,255,255,.6);border-radius:var(--rp);padding:6px 20px;font-family:'Nunito',sans-serif;font-size:17px;font-weight:800;color:#1C3040;outline:none;width:160px;text-align:center;}
+
+  .content{padding:28px;}
+  .sh{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .sh h2{font-family:'Nunito',sans-serif;font-size:17px;font-weight:900;color:var(--text);}
+  .si{width:32px;height:32px;flex-shrink:0;}
+  .divider{height:1px;background:var(--border);margin:0 0 26px;}
+
+  /* INFO */
+  .info-notice{background:#FFF8E8;border-left:4px solid var(--butter-txt);padding:14px 18px;margin-bottom:26px;border-radius:12px;font-size:13px;line-height:1.6;color:#7A6010;}
+  .info-notice strong{display:block;margin-bottom:4px;font-weight:800;}
+
+  /* MEMBERS */
+  .mwrap{margin-bottom:26px;}
+  .mrow{display:flex;gap:12px;flex-wrap:wrap;}
+  .mc{border:2px solid transparent;border-radius:var(--r);padding:16px 18px;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:108px;box-shadow:var(--sh);transition:all .2s;}
+  .mc-teal  {background:var(--teal);  box-shadow:0 4px 16px rgba(40,104,96,.18);}
+  .mc-butter{background:var(--butter);box-shadow:0 4px 16px rgba(122,92,16,.15);}
+  .mc-blush {background:var(--blush); box-shadow:0 4px 16px rgba(138,56,40,.14);}
+  .mc-sage  {background:var(--sage);  box-shadow:0 4px 16px rgba(40,96,88,.15);}
+  .mc-lilac {background:var(--lilac); box-shadow:0 4px 16px rgba(96,80,128,.13);}
+  .mc-add{background:none;border:2px dashed var(--border);border-radius:var(--r);padding:16px 18px;min-width:108px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;color:var(--text-light);transition:all .2s;}
+  .mc-add:hover{border-color:var(--sky);color:var(--sky);}
+  .mav{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Nunito',sans-serif;font-size:18px;font-weight:900;color:white;}
+  .mn-input{background:transparent;border:none;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:var(--text);text-align:center;width:90%;outline:none;cursor:text;}
+  .mn-input:focus{border-bottom:1.5px solid rgba(0,0,0,.15);}
+  .type-select{background:transparent;border:none;font-family:'Nunito',sans-serif;font-size:10px;font-weight:800;cursor:pointer;outline:none;border-radius:100px;padding:3px 8px;-webkit-appearance:none;text-align:center;}
+  .type-teal  {background:rgba(40,104,96,.15); color:var(--teal-txt);}
+  .type-butter{background:rgba(122,92,16,.13); color:var(--butter-txt);}
+  .type-blush {background:rgba(138,56,40,.13); color:var(--blush-txt);}
+  .type-sage  {background:rgba(40,96,88,.13);  color:var(--sage-txt);}
+  .type-lilac {background:rgba(96,80,128,.12); color:var(--lilac-txt);}
+  .ma{display:flex;gap:4px;margin-top:2px;}
+  .ib{background:rgba(255,255,255,.6);border:1px solid rgba(0,0,0,.08);border-radius:7px;padding:4px 8px;font-size:12px;cursor:pointer;color:var(--text-soft);}
+  .ib:hover{background:rgba(255,255,255,.9);}
+
+  /* AVAILABILITY */
+  .awrap{margin-bottom:26px;}
+  .actrl{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .bo{border-radius:var(--rp);padding:7px 16px;font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--text-soft);transition:all .15s;}
+  .bo:hover{background:var(--card-bg);}
+  .at{background:white;border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);border:1.5px solid var(--border);}
+  .ahr{display:grid;grid-template-columns:110px repeat(7,1fr);background:var(--card-bg);border-bottom:1.5px solid var(--border);}
+  .ahc{padding:10px 4px;text-align:center;font-size:11px;font-weight:800;color:var(--text-soft);font-family:'Nunito',sans-serif;}
+  .ahc.wk{color:#7BBAB4;}
+  .abr{display:grid;grid-template-columns:110px repeat(7,1fr);border-bottom:1px solid var(--card-bg);}
+  .abr:last-child{border-bottom:none;}
+  .atl{padding:8px 10px;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:var(--text);background:var(--card-bg);border-right:1.5px solid var(--border);}
+  .ac{padding:5px;display:flex;align-items:center;justify-content:center;}
+  .ab{width:100%;height:34px;border-radius:9px;border:none;cursor:pointer;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;transition:all .12s;}
+  .ab:hover{filter:brightness(.92);transform:scale(.97);}
+  .av-btn{background:var(--available);color:var(--avail-txt);}
+  .ap-btn{background:var(--preferred);color:var(--pref-txt);}
+  .au-btn{background:var(--unavail);color:var(--unavail-txt);}
+  .leg{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;}
+  .li{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text-soft);}
+  .ld{width:20px;height:20px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;}
+
+  /* DAYCARE */
+  .dc-toggle{display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:14px;}
+  .dc-toggle input{display:none;}
+  .dc-switch{width:38px;height:22px;background:var(--border);border-radius:11px;position:relative;transition:background .2s;}
+  .dc-switch::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;background:white;border-radius:50%;transition:transform .2s;}
+  .dc-toggle input:checked+.dc-switch{background:var(--sky);}
+  .dc-toggle input:checked+.dc-switch::after{transform:translateX(16px);}
+  .dc-lbl{font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--text-soft);}
+  .dc-btn{background:var(--sky-light);color:#3A7890;font-weight:800;}
+
+  /* GENERATE */
+  .gw{margin-bottom:26px;}
+  .bg{width:100%;padding:15px;background:linear-gradient(135deg,var(--sky) 0%,#6898AC 100%);color:white;border:none;border-radius:var(--rp);font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 5px 20px rgba(120,170,190,.38);display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;}
+  .bg:hover{filter:brightness(1.07);transform:translateY(-1px);}
+
+  /* SCHEDULE */
+  .sw{margin-bottom:26px;}
+  .stop{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+  .sacts{display:flex;gap:8px;}
+  .bsm{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--rp);font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--text-soft);transition:all .15s;}
+  .bsm:hover{background:var(--card-bg);}
+  .stbl{background:white;border-radius:var(--r);overflow:hidden;overflow-x:auto;box-shadow:var(--sh);border:1.5px solid var(--border);}
+  .sgrid{display:grid;grid-template-columns:120px repeat(7,1fr);min-width:600px;}
+  .scor{background:var(--card-bg);border-bottom:1.5px solid var(--border);border-right:1.5px solid var(--border);}
+  .sth{padding:12px 8px 10px;text-align:center;background:var(--card-bg);border-bottom:1.5px solid var(--border);border-right:1px solid var(--border);}
+  .sth:last-child{border-right:none;}
+  .sth.wknd{background:#EEF8F6;}
+  .thlbl{font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;color:var(--text-soft);}
+  .thlbl.wk{color:#7BBAB4;}
+  .srow-label{padding:10px 12px;background:var(--card-bg);border-right:1.5px solid var(--border);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px;}
+  .srow-label.last{border-bottom:none;}
+  .sln{font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;color:var(--text);}
+  .sc{padding:7px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+  .sc:last-child{border-right:none;}
+  .sc.wknd{background:#F0F8FC;}
+  .sc.last{border-bottom:none;}
+  .ci{width:100%;min-height:52px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:all .15s;}
+  .ci:hover{filter:brightness(.93);transform:scale(.97);}
+  .ci.empty{background:var(--card-bg);}
+  .cn{font-family:'Nunito',sans-serif;font-size:12px;font-weight:900;}
+  .c-teal  {background:var(--teal);  color:var(--teal-txt);}
+  .c-butter{background:var(--butter);color:var(--butter-txt);}
+  .c-blush {background:var(--blush); color:var(--blush-txt);}
+  .c-sage  {background:var(--sage);  color:var(--sage-txt);}
+  .c-lilac {background:var(--lilac); color:var(--lilac-txt);}
+
+  /* SUMMARY */
+  .smwrap{margin-bottom:26px;}
+  .smcards{display:flex;gap:14px;flex-wrap:wrap;}
+  .smcard{flex:1;min-width:160px;border-radius:var(--r);padding:22px 18px;box-shadow:var(--sh);display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;}
+  .smcard-teal  {background:var(--teal);  box-shadow:0 4px 16px rgba(40,104,96,.15);}
+  .smcard-butter{background:var(--butter);box-shadow:0 4px 16px rgba(122,92,16,.12);}
+  .smcard-blush {background:var(--blush); box-shadow:0 4px 16px rgba(138,56,40,.12);}
+  .smcard-sage  {background:var(--sage);  box-shadow:0 4px 16px rgba(40,96,88,.12);}
+  .smcard-lilac {background:var(--lilac); box-shadow:0 4px 16px rgba(96,80,128,.10);}
+  .smav{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;color:white;}
+  .smn{font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;}
+  .smn-teal  {color:var(--teal-txt);}
+  .smn-butter{color:var(--butter-txt);}
+  .smn-blush {color:var(--blush-txt);}
+  .smn-sage  {color:var(--sage-txt);}
+  .smn-lilac {color:var(--lilac-txt);}
+  .smshifts{font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--text-soft);}
+  .smquote{font-size:12px;font-weight:600;color:var(--text-soft);line-height:1.5;font-style:italic;}
+
+  /* ACTIONS */
+  .acts{display:flex;gap:12px;}
+  .ba{flex:1;padding:13px;border-radius:var(--rp);font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;border:2px solid var(--sky);background:white;color:#3A7890;transition:all .2s;}
+  .ba:hover{background:var(--sky-light);}
+
+  /* MODAL */
+  .modal{display:none;position:fixed;inset:0;background:rgba(45,36,36,.5);z-index:1000;align-items:center;justify-content:center;}
+  .modal.active{display:flex;}
+  .modal-content{background:white;padding:28px;border-radius:var(--r);max-width:360px;width:90%;box-shadow:0 8px 40px rgba(45,36,36,.2);}
+  .modal-title{font-family:'Nunito',sans-serif;font-size:17px;font-weight:900;margin-bottom:16px;color:var(--text);}
+  .modal-options{display:flex;flex-direction:column;gap:8px;}
+  .modal-option{padding:11px 16px;background:var(--card-bg);border-radius:11px;cursor:pointer;transition:all .15s;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--text);border:none;width:100%;text-align:center;}
+  .modal-option:hover{background:var(--sky);color:white;}
+  .modal-cancel{margin-top:10px;width:100%;padding:11px;border-radius:var(--rp);border:1.5px solid var(--border);background:white;color:var(--text-soft);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+  .modal-cancel:hover{background:var(--card-bg);}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="hi">
+      <div class="htop">
+        <div class="logo">
+          <svg width="42" height="42" viewBox="0 0 42 42" fill="none">
+            <ellipse cx="21" cy="26" rx="13" ry="11" fill="#FFD54F"/>
+            <ellipse cx="21" cy="15" rx="9" ry="8" fill="#FFE082"/>
+            <circle cx="17.5" cy="14" r="1.8" fill="#333"/>
+            <circle cx="24.5" cy="14" r="1.8" fill="#333"/>
+            <circle cx="17.8" cy="13.6" r=".6" fill="white"/>
+            <circle cx="24.8" cy="13.6" r=".6" fill="white"/>
+            <ellipse cx="21" cy="18.5" rx="2.5" ry="1.5" fill="#FF8F00"/>
+            <path d="M8 23 Q5 19 11 21 Q7 25 9 28Z" fill="#FFC107"/>
+            <path d="M34 23 Q37 19 31 21 Q35 25 33 28Z" fill="#FFC107"/>
+          </svg>
+        </div>
+        <div class="htxt">
+          <h1>Baby Care Scheduler</h1>
+          <p>Weekly shift coordinator for your little one. Share the care, share the love &#10084;&#65039;</p>
+        </div>
+      </div>
+      <div class="bnrow">
+        <span class="bnlbl">Baby's name:</span>
+        <input class="bninput" id="baby-name" placeholder="Enter name…" maxlength="12">
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- FAMILY MEMBERS -->
+    <div class="mwrap">
+      <div class="sh">
+        <div class="si">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="9" fill="#CCE8E4"/>
+            <path d="M16 6L28 15H4L16 6Z" fill="#3A9A94" opacity=".88"/>
+            <rect x="6" y="15" width="20" height="13" rx="1" fill="white" opacity=".88"/>
+            <rect x="13" y="20" width="6" height="8" rx="1.5" fill="#3A9A94" opacity=".7"/>
+            <rect x="7.5" y="17" width="4.5" height="4" rx="1" fill="#3A9A94" opacity=".45"/>
+            <rect x="20" y="17" width="4.5" height="4" rx="1" fill="#3A9A94" opacity=".45"/>
+          </svg>
+        </div>
+        <h2>Family Members</h2>
+      </div>
+      <div id="members-list" class="mrow"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- AVAILABILITY -->
+    <div id="availability-matrix"></div>
+
+    <!-- DAYCARE -->
+    <div id="daycare-section"></div>
+
+    <!-- GENERATE -->
+    <div class="gw">
+      <button class="bg" onclick="generateSchedule()">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><line x1="4" y1="18" x2="13" y2="9" stroke="white" stroke-width="2.5" stroke-linecap="round"/><path d="M15 2L16.2 5.8L20 7L16.2 8.2L15 12L13.8 8.2L10 7L13.8 5.8Z" fill="white" opacity=".95"/><circle cx="5" cy="9" r="1.2" fill="white" opacity=".7"/><line x1="3" y1="5" x2="3" y2="8" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="1.5" y1="6.5" x2="4.5" y2="6.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Generate Schedule
+      </button>
+    </div>
+
+    <!-- SCHEDULE -->
+    <div class="sw">
+      <div class="stop">
+        <div class="sh" style="margin-bottom:0;">
+          <div class="si">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <rect width="32" height="32" rx="9" fill="#C8DDD8"/>
+              <rect x="8" y="11" width="16" height="16" rx="3" fill="white" opacity=".92"/>
+              <rect x="12" y="7" width="8" height="5" rx="2" fill="#3A7870"/>
+              <rect x="11" y="16" width="10" height="1.8" rx=".9" fill="#6AADA8"/>
+              <rect x="11" y="20" width="7" height="1.8" rx=".9" fill="#6AADA8"/>
+              <rect x="11" y="24" width="8.5" height="1.8" rx=".9" fill="#6AADA8"/>
+            </svg>
+          </div>
+          <h2>This Week's Schedule <span id="week-label" style="font-size:11px;font-weight:600;color:var(--text-light);margin-left:4px;"></span></h2>
+        </div>
+        <div class="sacts">
+          <button class="bsm" onclick="moveToPrevWeek()">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M8 2L4.5 6.5L8 11" stroke="#8A7A74" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Prev Week
+          </button>
+          <button class="bsm" onclick="moveToNextWeek()">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="2.5" width="11" height="9.5" rx="2" fill="none" stroke="#8A7A74" stroke-width="1.3"/><line x1="1" y1="5.5" x2="12" y2="5.5" stroke="#8A7A74" stroke-width="1.3"/><rect x="3.5" y="1" width="1.5" height="3" rx=".75" fill="#8A7A74"/><rect x="8" y="1" width="1.5" height="3" rx=".75" fill="#8A7A74"/></svg>
+            Next Week
+          </button>
+          <button class="bsm" onclick="clearSchedule()">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 3.5h9M5 3.5V2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v1.5M10 3.5l-.6 7a1 1 0 0 1-1 .9H4.6a1 1 0 0 1-1-.9L3 3.5" stroke="#8A7A74" stroke-width="1.3" stroke-linecap="round"/></svg>
+            Clear
+          </button>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--text-soft);margin:8px 0 14px;">Tap any cell to reassign, lock, or clear a caregiver for that slot.</p>
+      <div id="schedule-container"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- CARE SUMMARY -->
+    <div class="smwrap">
+      <div class="sh">
+        <div class="si">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="9" fill="#F2E4B8"/>
+            <path d="M16 6l2.4 6.3H25l-5.2 3.8 2 6.4L16 18.8l-5.8 3.7 2-6.4L7 12.3h6.6z" fill="#C8A020" opacity=".9"/>
+          </svg>
+        </div>
+        <h2>This Week's Care Summary</h2>
+      </div>
+      <div id="contribution-container"></div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="acts">
+      <button class="ba" onclick="exportToText()">&#128203; &nbsp;Copy Text</button>
+      <button class="ba" onclick="exportToCSV()">&#128229; &nbsp;Export CSV</button>
+    </div>
+
+    <div class="info-notice" style="margin-top:26px;">
+      <strong>&#128161; Friendly Note</strong>
+      Your schedule is saved only on this device and browser. If family members need to view it together, we recommend maintaining the schedule on one shared device and browser, then taking a screenshot or sharing the exported text/CSV with everyone. This keeps things simple and protects your family's privacy — no data is ever uploaded.
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="change-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-title">Select Caregiver</div>
+    <div id="modal-options" class="modal-options"></div>
+    <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+<script>
+const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const TIME_SLOTS = ['Morning','Afternoon','Evening'];
+const ROLES = ['Mom','Dad','Grandma','Grandpa','Other'];
+const COLORS = ['teal','butter','blush','lilac','sage'];
+const COLOR_GRADIENTS = {
+  teal:  'linear-gradient(135deg,#9DD4CE,#6BBAB4)',
+  butter:'linear-gradient(135deg,#E8CC70,#C8A840)',
+  blush: 'linear-gradient(135deg,#E8A898,#C88878)',
+  sage:  'linear-gradient(135deg,#A8CCC8,#6AADA8)',
+  lilac: 'linear-gradient(135deg,#C8B8E8,#A090C8)'
+};
+const ENCOURAGEMENT = [
+  'Your love and care wrap this little one in warmth every single day.',
+  'Every moment you show up is a memory your child will carry forever.',
+  'Your wisdom and gentle touch are the greatest gift this family has.',
+  'Thank you for all you do — every effort truly counts.',
+  'Baby is so lucky to have you in their corner.',
+  'Your dedication makes home a warmer, safer place.',
+  'Every shift you take is a gift to your little one.',
+  'Your presence means everything to this family.',
+  'You are doing an amazing job — keep shining.',
+  'Your care is a precious gift that no one else can give.'
+];
+
+let members = [], availability = {}, schedule = {}, currentEditCell = null, babyName = '', weekStartDate = '';
+let daycareEnabled = false, daycareSlots = {};
+
+function memberColor(m) { return COLORS[(m.colorIdx !== undefined ? m.colorIdx : 0) % COLORS.length]; }
+
+function getTimeIcon(slot) {
+  if (slot === 'Morning')
+    return '<svg width="16" height="16" viewBox="0 0 18 18" fill="none"><rect width="18" height="18" rx="5" fill="#FFF0C0"/><circle cx="9" cy="9" r="3.2" fill="#F5C830"/><g stroke="#F5C830" stroke-width="1.1" stroke-linecap="round"><line x1="9" y1="2" x2="9" y2="3.5"/><line x1="9" y1="14.5" x2="9" y2="16"/><line x1="2" y1="9" x2="3.5" y2="9"/><line x1="14.5" y1="9" x2="16" y2="9"/></g></svg>';
+  if (slot === 'Afternoon')
+    return '<svg width="16" height="16" viewBox="0 0 18 18" fill="none"><rect width="18" height="18" rx="5" fill="#FFE8C0"/><circle cx="9" cy="9" r="4.5" fill="#FFB830" opacity=".75"/><circle cx="9" cy="9" r="2.5" fill="#FF9820"/></svg>';
+  return '<svg width="16" height="16" viewBox="0 0 18 18" fill="none"><rect width="18" height="18" rx="5" fill="#D8E8F8"/><path d="M11 4a6 6 0 1 0 0 10A4.5 4.5 0 1 1 11 4z" fill="#8AA8D0" opacity=".88"/><circle cx="12.5" cy="5" r="1" fill="#B8CDE8"/></svg>';
+}
+
+function getCalendarSVG(color) {
+  const c = {
+    teal:  {bg:'#CCE8E4',fill:'#3A9A94',dark:'#2A7A74'},
+    butter:{bg:'#F2E4B8',fill:'#C4A040',dark:'#A08030'},
+    blush: {bg:'#F4D4D0',fill:'#C07868',dark:'#A05848'},
+    sage:  {bg:'#C8DDD8',fill:'#5A9A94',dark:'#3A7870'},
+    lilac: {bg:'#DDD0EE',fill:'#9080C0',dark:'#7060A0'}
+  }[color] || {bg:'#CCE8E4',fill:'#3A9A94',dark:'#2A7A74'};
+  return '<svg width="32" height="32" viewBox="0 0 32 32" fill="none">'
+    +'<rect width="32" height="32" rx="9" fill="'+c.bg+'"/>'
+    +'<rect x="5" y="10" width="22" height="17" rx="3.5" fill="white" opacity=".9"/>'
+    +'<rect x="5" y="10" width="22" height="7" rx="3.5" fill="'+c.fill+'"/>'
+    +'<rect x="5" y="14" width="22" height="3" fill="'+c.fill+'"/>'
+    +'<rect x="10" y="6" width="3" height="7" rx="1.5" fill="'+c.dark+'"/>'
+    +'<rect x="19" y="6" width="3" height="7" rx="1.5" fill="'+c.dark+'"/>'
+    +'<circle cx="11" cy="21" r="1.2" fill="'+c.fill+'" opacity=".7"/>'
+    +'<circle cx="16" cy="21" r="1.2" fill="'+c.fill+'" opacity=".7"/>'
+    +'<circle cx="21" cy="21" r="1.2" fill="'+c.fill+'" opacity=".7"/>'
+    +'<circle cx="11" cy="25" r="1.2" fill="'+c.fill+'" opacity=".7"/>'
+    +'<circle cx="16" cy="25" r="1.2" fill="'+c.fill+'" opacity=".7"/>'
+    +'</svg>';
+}
+
+function getMonday(d) {
+  d = new Date(d); var day = d.getDay();
+  var diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  d.setDate(diff); d.setHours(0,0,0,0); return d;
+}
+function formatWeekLabel(d) {
+  var end = new Date(d); end.setDate(end.getDate()+6);
+  var opts = {month:'short',day:'numeric'};
+  return d.toLocaleDateString('en-US',opts)+' – '+end.toLocaleDateString('en-US',opts)+', '+end.getFullYear();
+}
+
+// ===== Init =====
+function init() {
+  loadData();
+  validateAndFixAvailability();
+  members.forEach(function(m, idx) { if (m.colorIdx === undefined) m.colorIdx = idx % COLORS.length; });
+  if (!weekStartDate) weekStartDate = getMonday(new Date()).toISOString().slice(0,10);
+  if (members.length === 0) { addMember('Mom','Mom','Working'); addMember('Dad','Dad','Working'); }
+  const saved = localStorage.getItem('babycare_babyname_en');
+  if (saved) { babyName = saved; document.getElementById('baby-name').value = babyName; }
+  document.getElementById('baby-name').addEventListener('change', function() {
+    babyName = this.value; localStorage.setItem('babycare_babyname_en', babyName);
+  });
+  renderAll();
+}
+
+function renderAll() { renderMembers(); renderAvailability(); renderDaycare(); renderSchedule(); renderContribution(); }
+
+// ===== Data =====
+function saveData() {
+  localStorage.setItem('babycare_members_en', JSON.stringify(members));
+  localStorage.setItem('babycare_availability_en', JSON.stringify(availability));
+  localStorage.setItem('babycare_schedule_en', JSON.stringify(schedule));
+  localStorage.setItem('babycare_weekstart_en', weekStartDate);
+  localStorage.setItem('babycare_daycare_en', JSON.stringify({enabled:daycareEnabled,slots:daycareSlots}));
+}
+function loadData() {
+  const m = localStorage.getItem('babycare_members_en');
+  const a = localStorage.getItem('babycare_availability_en');
+  const s = localStorage.getItem('babycare_schedule_en');
+  const w = localStorage.getItem('babycare_weekstart_en');
+  const dc = localStorage.getItem('babycare_daycare_en');
+  if (m) members = JSON.parse(m);
+  if (a) availability = JSON.parse(a);
+  if (s) schedule = JSON.parse(s);
+  if (w) weekStartDate = w;
+  if (dc) { var p = JSON.parse(dc); daycareEnabled = p.enabled; daycareSlots = p.slots || {}; }
+}
+function validateAndFixAvailability() {
+  let dirty = false;
+  members.forEach(function(member) {
+    if (!availability[member.id]) { availability[member.id] = getDefaultAvailability(member.type); dirty = true; return; }
+    let missing = false;
+    DAYS.forEach(function(day) { TIME_SLOTS.forEach(function(slot) { if (!availability[member.id][day+'-'+slot]) missing = true; }); });
+    if (missing) { availability[member.id] = getDefaultAvailability(member.type); dirty = true; return; }
+    const vals = DAYS.reduce(function(acc,day){ return acc.concat(TIME_SLOTS.map(function(slot){ return availability[member.id][day+'-'+slot]; })); },[]);
+    if (vals.every(function(v){return v==='available';})) {
+      const def = getDefaultAvailability(member.type);
+      if (Object.values(def).some(function(v){return v==='unavailable';})) { availability[member.id]=def; dirty=true; }
+    }
+  });
+  if (dirty) saveData();
+}
+function getDefaultAvailability(type) {
+  const d = {};
+  DAYS.forEach(function(day,i) {
+    const isWeekday = i < 5;
+    TIME_SLOTS.forEach(function(slot) {
+      const key = day+'-'+slot;
+      if (type === 'Working') d[key] = isWeekday ? (slot==='Evening'?'available':'unavailable') : 'available';
+      else d[key] = isWeekday ? 'available' : 'unavailable';
+    });
+  });
+  return d;
+}
+
+// ===== Members =====
+function addMember(name, role, type) {
+  name = name || ''; role = role || 'Other'; type = type || 'Working';
+  const id = 'member_' + Date.now() + '_' + Math.random().toString(36).substr(2,9);
+  const colorIdx = members.length % COLORS.length;
+  members.push({ id:id, name:name, role:role, type:type, colorIdx:colorIdx });
+  availability[id] = getDefaultAvailability(type);
+  saveData(); renderMembers(); renderAvailability();
+}
+function removeMember(id) {
+  if (!confirm('Remove this member?')) return;
+  members = members.filter(function(m){return m.id!==id;});
+  delete availability[id];
+  Object.keys(schedule).forEach(function(k){ if(schedule[k].caregiverId===id) delete schedule[k]; });
+  saveData(); renderAll();
+}
+function updateMember(id, field, value) {
+  const m = members.find(function(m){return m.id===id;});
+  if (!m) return;
+  const oldType = m.type;
+  m[field] = value;
+  if (field==='type' && oldType!==value) availability[id]=getDefaultAvailability(value);
+  saveData(); renderMembers();
+  if (field==='type' || field==='name') { renderAvailability(); renderContribution(); }
+}
+function resetMemberAvailability(id) {
+  const m = members.find(function(m){return m.id===id;});
+  if (m && confirm('Reset '+m.name+'\'s availability to default?')) {
+    availability[id]=getDefaultAvailability(m.type); saveData(); renderAvailability();
+  }
+}
+function setAllAvailable(id, status) {
+  DAYS.forEach(function(day){ TIME_SLOTS.forEach(function(slot){ availability[id][day+'-'+slot]=status; }); });
+  saveData(); renderAvailability();
+}
+
+function renderMembers() {
+  const container = document.getElementById('members-list');
+  let html = '';
+  members.forEach(function(m, idx) {
+    const color = memberColor(m);
+    const displayName = m.name || 'New Member';
+    const initial = (displayName.charAt(0)||'?').toUpperCase();
+    const grad = COLOR_GRADIENTS[color];
+    const typeOpts = '<option'+(m.type==='Working'?' selected':'')+'>Working</option>'
+                   + '<option'+(m.type==='Stay-at-home'?' selected':'')+'>Stay-at-home</option>';
+    const roleOpts = ROLES.map(function(r){ return '<option'+(m.role===r?' selected':'')+'>'+r+'</option>'; }).join('');
+    html += '<div class="mc mc-'+color+'">'
+      + '<div class="mav" style="background:'+grad+'">'+initial+'</div>'
+      + '<input class="mn-input" value="'+(m.name?m.name.replace(/"/g,'&quot;'):'')+'" placeholder="Enter name…" maxlength="12"'
+      +   ' onchange="updateMember(\''+m.id+'\',\'name\',this.value)">'
+      + '<select class="type-select type-'+color+'" onchange="updateMember(\''+m.id+'\',\'role\',this.value)">'
+      +   roleOpts
+      + '</select>'
+      + '<select class="type-select type-'+color+'" onchange="updateMember(\''+m.id+'\',\'type\',this.value)">'
+      +   typeOpts
+      + '</select>'
+      + '<div class="ma"><button class="ib" onclick="removeMember(\''+m.id+'\')">&#128465;</button></div>'
+      + '</div>';
+  });
+  html += '<div class="mc-add" onclick="addMember()">'
+    + '<div style="font-size:26px;font-weight:300;">&#65291;</div>'
+    + '<span style="font-size:11px;font-weight:700;">Add Member</span>'
+    + '</div>';
+  container.innerHTML = html;
+}
+
+// ===== Availability =====
+function toggleAvailability(memberId, key) {
+  const cycle = {available:'preferred',preferred:'unavailable',unavailable:'available'};
+  availability[memberId][key] = cycle[availability[memberId][key]] || 'available';
+  saveData(); renderAvailability();
+}
+function renderAvailability() {
+  const container = document.getElementById('availability-matrix');
+  let html = '';
+  members.forEach(function(m, idx) {
+    const color = memberColor(m);
+    const dayHdrs = DAYS.map(function(d){
+      return '<div class="ahc'+(d==='Sat'||d==='Sun'?' wk':'')+'">'+d+'</div>';
+    }).join('');
+    const timeRows = TIME_SLOTS.map(function(slot) {
+      const cells = DAYS.map(function(day) {
+        const key = day+'-'+slot;
+        const st = (availability[m.id]&&availability[m.id][key])||'available';
+        const cls = st==='available'?'av-btn':st==='preferred'?'ap-btn':'au-btn';
+        const lbl = st==='available'?'&#10003;':st==='preferred'?'&#9733;':'&times;';
+        return '<div class="ac"><button class="ab '+cls+'" onclick="toggleAvailability(\''+m.id+'\',\''+key+'\')">'+lbl+'</button></div>';
+      }).join('');
+      return '<div class="abr"><div class="atl">'+getTimeIcon(slot)+'<span>'+slot+'</span></div>'+cells+'</div>';
+    }).join('');
+    var availName = m.name || 'New Member';
+    html += '<div class="awrap">'
+      + '<div class="sh"><div class="si">'+getCalendarSVG(color)+'</div>'
+      + '<h2>'+availName+'\'s Availability</h2></div>'
+      + '<div class="actrl">'
+      + '<button class="bo" onclick="setAllAvailable(\''+m.id+'\',\'available\')">&#10003; All Available</button>'
+      + '<button class="bo" onclick="setAllAvailable(\''+m.id+'\',\'preferred\')">&#9733; All Preferred</button>'
+      + '<button class="bo" onclick="setAllAvailable(\''+m.id+'\',\'unavailable\')">&times; All Unavailable</button>'
+      + '<button class="bo" onclick="resetMemberAvailability(\''+m.id+'\')">&#8635; Reset Default</button>'
+      + '</div>'
+      + '<div class="at"><div class="ahr"><div class="ahc"></div>'+dayHdrs+'</div>'+timeRows+'</div>'
+      + '<div class="leg">'
+      + '<div class="li"><div class="ld" style="background:var(--available);color:var(--avail-txt);">&#10003;</div>Available</div>'
+      + '<div class="li"><div class="ld" style="background:var(--preferred);color:var(--pref-txt);">&#9733;</div>Preferred</div>'
+      + '<div class="li"><div class="ld" style="background:var(--unavail);color:var(--unavail-txt);">&times;</div>Unavailable</div>'
+      + '</div></div><div class="divider"></div>';
+  });
+  container.innerHTML = html;
+}
+
+// ===== Daycare =====
+function toggleDaycareEnabled() {
+  daycareEnabled = !daycareEnabled;
+  saveData(); renderDaycare(); renderSchedule();
+}
+function toggleDaycareSlot(key) {
+  daycareSlots[key] = !daycareSlots[key];
+  saveData(); renderDaycare(); renderSchedule();
+}
+function renderDaycare() {
+  var container = document.getElementById('daycare-section');
+  var html = '<div class="awrap">'
+    + '<label class="dc-toggle">'
+    + '<input type="checkbox" '+(daycareEnabled?'checked':'')+' onchange="toggleDaycareEnabled()">'
+    + '<span class="dc-switch"></span>'
+    + '<span class="dc-lbl">&#127979; Daycare Schedule (Optional)</span>'
+    + '</label>';
+  if (daycareEnabled) {
+    var dayHdrs = DAYS.map(function(d){
+      return '<div class="ahc'+(d==='Sat'||d==='Sun'?' wk':'')+'">'+d+'</div>';
+    }).join('');
+    var timeRows = TIME_SLOTS.map(function(slot) {
+      var cells = DAYS.map(function(day) {
+        var key = day+'-'+slot;
+        var on = daycareSlots[key];
+        var cls = on ? 'dc-btn' : 'au-btn';
+        var lbl = on ? '&#127979;' : '&times;';
+        return '<div class="ac"><button class="ab '+cls+'" onclick="toggleDaycareSlot(\''+key+'\')">'+lbl+'</button></div>';
+      }).join('');
+      return '<div class="abr"><div class="atl">'+getTimeIcon(slot)+'<span>'+slot+'</span></div>'+cells+'</div>';
+    }).join('');
+    html += '<div class="at"><div class="ahr"><div class="ahc"></div>'+dayHdrs+'</div>'+timeRows+'</div>'
+      + '<div class="leg">'
+      + '<div class="li"><div class="ld" style="background:var(--sky-light);color:#3A7890;">&#127979;</div>At daycare</div>'
+      + '<div class="li"><div class="ld" style="background:var(--unavail);color:var(--unavail-txt);">&times;</div>Not at daycare</div>'
+      + '</div>';
+  }
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+// ===== Generate =====
+function generateSchedule() {
+  if (window.umami) umami.track('generate_attempt');
+  try {
+    const locked = {};
+    Object.keys(schedule).forEach(function(k){ if(schedule[k].locked) locked[k]=schedule[k]; });
+    schedule = Object.assign({},locked);
+    const slots = [];
+    DAYS.forEach(function(day){ TIME_SLOTS.forEach(function(slot){ const k=day+'-'+slot; if(!schedule[k] && !(daycareEnabled && daycareSlots[k])) slots.push({day:day,slot:slot,key:k}); }); });
+    const count = {}; members.forEach(function(m){count[m.id]=0;});
+    Object.values(schedule).forEach(function(s){count[s.caregiverId]++;});
+    const assigned = new Set(Object.keys(schedule));
+
+    // Phase 1: only-one-available slots
+    slots.forEach(function(s){
+      if(assigned.has(s.key)) return;
+      const avail = members.filter(function(m){ const st=availability[m.id][s.key]; return st==='available'||st==='preferred'; });
+      if(avail.length===1){ schedule[s.key]={caregiverId:avail[0].id,locked:false}; count[avail[0].id]++; assigned.add(s.key); }
+    });
+    // Phase 2: preferred
+    slots.forEach(function(s){
+      if(assigned.has(s.key)) return;
+      const cands = members.filter(function(m){ const st=availability[m.id][s.key]; return st==='available'||st==='preferred'; });
+      if(!cands.length) return;
+      const pref = cands.filter(function(m){return availability[m.id][s.key]==='preferred';});
+      if(pref.length>0){
+        pref.sort(function(a,b){return count[a.id]-count[b.id];});
+        const all = cands.slice().sort(function(a,b){return count[a.id]-count[b.id];});
+        const sel = (count[pref[0].id]-count[all[0].id]<=2)?pref[0]:all[0];
+        schedule[s.key]={caregiverId:sel.id,locked:false}; count[sel.id]++; assigned.add(s.key);
+      }
+    });
+    // Phase 3: fairness
+    slots.forEach(function(s){
+      if(assigned.has(s.key)) return;
+      const cands = members.filter(function(m){ const st=availability[m.id][s.key]; return st==='available'||st==='preferred'; });
+      if(!cands.length) return;
+      cands.sort(function(a,b){return count[a.id]-count[b.id];});
+      schedule[s.key]={caregiverId:cands[0].id,locked:false}; count[cands[0].id]++; assigned.add(s.key);
+    });
+    saveData(); renderSchedule(); renderContribution();
+    var dcCount = daycareEnabled ? Object.keys(daycareSlots).filter(function(k){return daycareSlots[k];}).length : 0;
+    var total = DAYS.length * TIME_SLOTS.length - dcCount;
+    var filled = Object.keys(schedule).length;
+    var empty = total - filled;
+    if (empty > 0) alert(empty + ' slot' + (empty > 1 ? 's' : '') + ' could not be assigned — no available caregiver. Adjust availability and try again.');
+    if (window.umami) umami.track('generate_success');
+  } catch(e) {
+    if (window.umami) umami.track('generate_fail');
+    console.error(e); alert('Schedule generation failed, please try again.');
+  }
+}
+
+// ===== Render Schedule =====
+function renderSchedule() {
+  var wl = document.getElementById('week-label');
+  if (wl && weekStartDate) wl.textContent = formatWeekLabel(new Date(weekStartDate));
+  const container = document.getElementById('schedule-container');
+  let html = '<div class="stbl"><div class="sgrid"><div class="scor"></div>';
+  DAYS.forEach(function(day,i){
+    const wk = day==='Sat'||day==='Sun';
+    const last = i===DAYS.length-1?' style="border-right:none;"':'';
+    html += '<div class="sth'+(wk?' wknd':'')+'"'+last+'><div class="thlbl'+(wk?' wk':'')+'">'+day+'</div></div>';
+  });
+  TIME_SLOTS.forEach(function(slot,si){
+    const isLast = si===TIME_SLOTS.length-1;
+    html += '<div class="srow-label'+(isLast?' last':'')+'">'+getTimeIcon(slot)+'<span class="sln">'+slot+'</span></div>';
+    DAYS.forEach(function(day,di){
+      const wk = day==='Sat'||day==='Sun';
+      const lastCol = di===DAYS.length-1;
+      const key = day+'-'+slot;
+      const asgn = schedule[key];
+      let inner;
+      if (daycareEnabled && daycareSlots[key]) {
+        inner = '<div class="ci" style="background:var(--sky-light);"><span style="font-size:16px;">&#127979;</span><span style="font-size:10px;color:#3A7890;font-weight:700;">Daycare</span></div>';
+      } else if (asgn) {
+        const member = members.find(function(m){return m.id===asgn.caregiverId;});
+        if (member) {
+          const color = memberColor(member);
+          inner = '<div class="ci c-'+color+'" onclick="openChangeModal(\''+key+'\')">'
+            + '<span class="cn">'+(member.name||'New Member')+'</span>'
+            + (asgn.locked?'<span style="font-size:9px;margin-top:2px;">&#128274;</span>':'')
+            + '</div>';
+        } else inner = '<div class="ci empty" onclick="openChangeModal(\''+key+'\')"></div>';
+      } else {
+        var hasAnyAssignment = Object.keys(schedule).length > 0;
+        var anyAvail = members.some(function(m){ var st=availability[m.id][key]; return st==='available'||st==='preferred'; });
+        if (hasAnyAssignment && !anyAvail && members.length > 0) {
+          inner = '<div class="ci empty" onclick="openChangeModal(\''+key+'\')" style="background:#FFE0E0;"><span style="font-size:16px;">&#9888;</span><span style="font-size:10px;color:#C04040;font-weight:700;">No one</span></div>';
+        } else {
+          inner = '<div class="ci empty" onclick="openChangeModal(\''+key+'\')"></div>';
+        }
+      }
+      const cls = 'sc'+(wk?' wknd':'')+(isLast?' last':'');
+      const lstyle = lastCol?' style="border-right:none;"':'';
+      html += '<div class="'+cls+'"'+lstyle+'>'+inner+'</div>';
+    });
+  });
+  html += '</div></div>';
+  container.innerHTML = html;
+}
+
+// ===== Modal =====
+function openChangeModal(key) {
+  currentEditCell = key;
+  const avail = members.filter(function(m){ const s=availability[m.id][key]; return s==='available'||s==='preferred'; });
+  const opts = document.getElementById('modal-options');
+  opts.innerHTML = avail.map(function(m){
+    return '<button class="modal-option" onclick="assignCaregiver(\''+key+'\',\''+m.id+'\')">'
+      +m.name+(availability[m.id][key]==='preferred'?' &#9733;':'')+'</button>';
+  }).join('');
+  if (schedule[key]) {
+    opts.innerHTML += '<button class="modal-option" style="background:#FFF0C0;color:#A08000;" onclick="toggleLock(\''+key+'\')">'
+      +(schedule[key].locked?'&#128275; Unlock':'&#128274; Lock Slot')+'</button>'
+      +'<button class="modal-option" style="background:#FFE0E0;color:#C04040;" onclick="clearSlot(\''+key+'\')">&times; Clear Slot</button>';
+  }
+  document.getElementById('change-modal').classList.add('active');
+}
+function closeModal() { document.getElementById('change-modal').classList.remove('active'); }
+function assignCaregiver(key, memberId) {
+  schedule[key]={caregiverId:memberId,locked:schedule[key]?schedule[key].locked:false};
+  saveData(); renderSchedule(); renderContribution(); closeModal();
+}
+function toggleLock(key) {
+  if(schedule[key]){schedule[key].locked=!schedule[key].locked;saveData();renderSchedule();}
+  closeModal();
+}
+function clearSlot(key){delete schedule[key];saveData();renderSchedule();renderContribution();closeModal();}
+
+// ===== Week control =====
+function moveToNextWeek(){
+  var d = new Date(weekStartDate); d.setDate(d.getDate()+7);
+  weekStartDate = d.toISOString().slice(0,10);
+  saveData(); renderSchedule();
+}
+function moveToPrevWeek(){
+  var d = new Date(weekStartDate); d.setDate(d.getDate()-7);
+  weekStartDate = d.toISOString().slice(0,10);
+  saveData(); renderSchedule();
+}
+function clearSchedule(){
+  if(confirm('Clear the current schedule?')){schedule={};saveData();renderSchedule();renderContribution();}
+}
+
+// ===== Summary =====
+function renderContribution() {
+  const container = document.getElementById('contribution-container');
+  const stats = {}; members.forEach(function(m){stats[m.id]=0;});
+  Object.values(schedule).forEach(function(s){if(stats[s.caregiverId]!==undefined)stats[s.caregiverId]++;});
+  let html = '<div class="smcards">';
+  members.forEach(function(m,idx){
+    const color = memberColor(m);
+    const grad = COLOR_GRADIENTS[color];
+    const dn = m.name || 'New Member';
+    const initial = (dn.charAt(0)||'?').toUpperCase();
+    const count = stats[m.id]||0;
+    const msg = ENCOURAGEMENT[idx % ENCOURAGEMENT.length];
+    html += '<div class="smcard smcard-'+color+'">'
+      + '<div class="smav" style="background:'+grad+'">'+initial+'</div>'
+      + '<div class="smn smn-'+color+'">'+dn+'</div>'
+      + '<div class="smshifts">'+count+' shift'+(count!==1?'s':'')+' this week</div>'
+      + '<div class="smquote">&ldquo;'+msg+'&rdquo;</div>'
+      + '</div>';
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+// ===== Export =====
+function exportToCSV() {
+  let csv = 'Day,TimeSlot,Caregiver\n';
+  DAYS.forEach(function(day){
+    TIME_SLOTS.forEach(function(slot){
+      const k=day+'-'+slot, a=schedule[k];
+      if(daycareEnabled && daycareSlots[k]){csv+=day+','+slot+',Daycare\n';}
+      else if(a){const m=members.find(function(m){return m.id===a.caregiverId;});csv+=day+','+slot+','+(m?m.name:'Unassigned')+'\n';}
+      else{csv+=day+','+slot+',Unassigned\n';}
+    });
+  });
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const link=document.createElement('a');
+  link.href=URL.createObjectURL(blob);
+  link.download=(babyName||'baby')+'_care_schedule.csv';
+  link.click();
+}
+function exportToText() {
+  const title=babyName||'Baby';
+  let text='Baby Care Schedule: '+title+'\n\n';
+  DAYS.forEach(function(day){
+    text+=day+':\n';
+    TIME_SLOTS.forEach(function(slot){
+      const k=day+'-'+slot;
+      if(daycareEnabled && daycareSlots[k]){text+='  '+slot+': Daycare\n';}
+      else{const a=schedule[k],m=a?members.find(function(m){return m.id===a.caregiverId;}):null;
+      text+='  '+slot+': '+(m?m.name:'Unassigned')+(a&&a.locked?' [locked]':'')+'\n';}
+    });
+    text+='\n';
+  });
+  text+='Care Summary:\n';
+  members.forEach(function(m){
+    const c=Object.values(schedule).filter(function(s){return s.caregiverId===m.id;}).length;
+    text+='  '+m.name+': '+c+' time slots\n';
+  });
+  navigator.clipboard.writeText(text).then(function(){alert('Schedule copied to clipboard!');});
+}
+
+init();
+</script>
+</body>
+</html>
